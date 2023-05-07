@@ -1,0 +1,3 @@
+[submodule "vector76"]
+	path = vector76
+	url = https://github.com/vector76/gridfinity_openscad
