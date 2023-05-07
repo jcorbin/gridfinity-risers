@@ -4,3 +4,6 @@
 [submodule "vector76"]
 	path = vector76
 	url = https://github.com/vector76/gridfinity_openscad
+[submodule "kennetek"]
+	path = kennetek
+	url = https://github.com/kennetek/gridfinity-rebuilt-openscad
