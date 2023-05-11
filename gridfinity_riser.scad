@@ -4,14 +4,13 @@ xsize = 4;
 ysize = 3;
 zsize = 4;
 
-// size of cable routing tunnels ; TODO support non-square tunnels
-tunnel_size = 3 * gridfinity_zpitch;
+default_tunnel_size = 3 * gridfinity_zpitch;
 
-tunnel_block(xsize, ysize, zsize, size=tunnel_size);
+tunnel_block(xsize, ysize, zsize);
 
-module tunnel_block(num_x, num_y, num_z, size=0) {
+module tunnel_block(num_x, num_y, num_z, size=default_tunnel_size) {
   height = num_z * gridfinity_zpitch;
-  lift = 2.25 + height/2;
+  margin = 2.25;
 
   corner_radius = 3.75;
   magnet_od = 6.5;
@@ -24,6 +23,10 @@ module tunnel_block(num_x, num_y, num_z, size=0) {
   frame_lift = height - 0.6;
   frame_outer_size = gridfinity_pitch - gridfinity_clearance;  // typically 41.5
   frame_corner_position = frame_outer_size/2 - corner_radius;
+  total_height = frame_lift + frame_height;
+
+  every = ceil((size + margin) / gridfinity_zpitch) * gridfinity_zpitch;
+  lift = margin + every/2;
 
   difference() {
 
@@ -52,17 +55,20 @@ module tunnel_block(num_x, num_y, num_z, size=0) {
       }
     }
 
-    // X tunnels
-    gridcopy(1, num_y)
-    translate([-gridfinity_pitch/2-1, 0, lift])
-    rotate([0, 90, 0])
-      tunnel(size, gridfinity_pitch * num_x + 2);
+    for (layer = [0 : every : total_height - margin - size]) {
+      // X tunnels
+      gridcopy(1, num_y)
+      translate([-gridfinity_pitch/2-1, 0, layer + lift])
+      rotate([0, 90, 0])
+        tunnel(size, gridfinity_pitch * num_x + 2);
 
-    // Y tunnels
-    gridcopy(num_x, 1)
-    translate([0, gridfinity_pitch * (num_y - 0.5)+1, lift])
-    rotate([90, 0, 0])
-      tunnel(size, gridfinity_pitch * num_y + 2);
+      // Y tunnels
+      gridcopy(num_x, 1)
+      translate([0, gridfinity_pitch * (num_y - 0.5)+1, layer + lift])
+      rotate([90, 0, 0])
+        tunnel(size, gridfinity_pitch * num_y + 2);
+
+    }
 
     // Z tunnels
     gridcopy(num_x, num_y)
