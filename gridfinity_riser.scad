@@ -4,7 +4,7 @@ xsize = 4;
 ysize = 3;
 zsize = 4;
 
-default_tunnel_size = 3 * gridfinity_zpitch;
+default_tunnel_size = 3;
 
 tunnel_block(xsize, ysize, zsize);
 
@@ -25,7 +25,11 @@ module tunnel_block(num_x, num_y, num_z, size=default_tunnel_size) {
   frame_corner_position = frame_outer_size/2 - corner_radius;
   total_height = frame_lift + frame_height;
 
-  every = ceil((size + margin) / gridfinity_zpitch) * gridfinity_zpitch;
+  xy_tunnel_width_mm = size * gridfinity_zpitch;
+  z_tunnel_width_mm = size * gridfinity_zpitch;
+  tunnel_height_mm = size * gridfinity_zpitch;
+
+  every = ceil((tunnel_height_mm + margin) / gridfinity_zpitch) * gridfinity_zpitch;
   lift = margin + every/2;
 
   difference() {
@@ -57,25 +61,25 @@ module tunnel_block(num_x, num_y, num_z, size=default_tunnel_size) {
       }
     }
 
-    for (layer = [0 : every : total_height - margin - size]) {
+    for (layer = [0 : every : total_height - margin - tunnel_height_mm]) {
       // X tunnels
       gridcopy(1, num_y)
       translate([-gridfinity_pitch/2-1, 0, layer + lift])
       rotate([0, 90, 0])
-        tunnel(size, size, gridfinity_pitch * num_x + 2);
+        tunnel(tunnel_height_mm, xy_tunnel_width_mm, gridfinity_pitch * num_x + 2);
 
       // Y tunnels
       gridcopy(num_x, 1)
       translate([0, gridfinity_pitch * (num_y - 0.5)+1, layer + lift])
       rotate([90, 0, 0])
-        tunnel(size, size, gridfinity_pitch * num_y + 2);
+        tunnel(xy_tunnel_width_mm, tunnel_height_mm, gridfinity_pitch * num_y + 2);
 
     }
 
     // Z tunnels
     gridcopy(num_x, num_y)
     translate([0, 0, -1])
-      tunnel(size, size, gridfinity_zpitch * num_z + 2);
+      tunnel(z_tunnel_width_mm, z_tunnel_width_mm, gridfinity_zpitch * num_z + 2);
   }
 }
 
