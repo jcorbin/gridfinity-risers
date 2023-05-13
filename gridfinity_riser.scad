@@ -62,34 +62,35 @@ module tunnel_block(num_x, num_y, num_z, size=default_tunnel_size) {
       gridcopy(1, num_y)
       translate([-gridfinity_pitch/2-1, 0, layer + lift])
       rotate([0, 90, 0])
-        tunnel(size, gridfinity_pitch * num_x + 2);
+        tunnel(size, size, gridfinity_pitch * num_x + 2);
 
       // Y tunnels
       gridcopy(num_x, 1)
       translate([0, gridfinity_pitch * (num_y - 0.5)+1, layer + lift])
       rotate([90, 0, 0])
-        tunnel(size, gridfinity_pitch * num_y + 2);
+        tunnel(size, size, gridfinity_pitch * num_y + 2);
 
     }
 
     // Z tunnels
     gridcopy(num_x, num_y)
     translate([0, 0, -1])
-      tunnel(size, gridfinity_zpitch * num_z + 2);
+      tunnel(size, size, gridfinity_zpitch * num_z + 2);
   }
 }
 
-module tunnel(size, h) {
-  corner_radius = min(3.75, size/4);
-  displace = size/2 - corner_radius;
+module tunnel(xsize, ysize, h) {
+  corner_radius = min(3.75, xsize/4, ysize/4);
+  dx = xsize/2 - corner_radius;
+  dy = ysize/2 - corner_radius;
   hull() {
-    translate([-displace, -displace, 0])
+    translate([-dx, -dy, 0])
       cylinder(r=corner_radius, h=h, $fn=48);
-    translate([displace, -displace, 0])
+    translate([dx, -dy, 0])
       cylinder(r=corner_radius, h=h, $fn=48);
-    translate([-displace, displace, 0])
+    translate([-dx, dy, 0])
       cylinder(r=corner_radius, h=h, $fn=48);
-    translate([displace, displace, 0])
+    translate([dx, dy, 0])
       cylinder(r=corner_radius, h=h, $fn=48);
   }
 }
