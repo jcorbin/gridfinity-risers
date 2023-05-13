@@ -5,30 +5,30 @@ set -x
 
 cd $(dirname "$0")
 
-xsize=1
-ysize=1
-zsize=4
+width=1
+depth=1
+height=4
 
-for xsize in 1 2 3 4 5 6; do
-  for ysize in 1 2 3 4 5; do
+for width in 1 2 3 4 5 6; do
+  for depth in 1 2 3 4 5; do
     openscad \
       ../gridfinity_riser.scad \
-      -D xsize=${xsize} \
-      -D ysize=${ysize} \
-      -D zsize=${zsize} \
-      -o tunnel_riser_${xsize}x${ysize}x${zsize}.stl
+      -D width=${width} \
+      -D depth=${depth} \
+      -D height=${height} \
+      -o tunnel_riser_${width}x${depth}x${height}.stl
   done
 done
 
-for xsize in 1 2; do
-  for ysize in 1 2; do
-    for zsize in 8 12 16 18 20; do
+for width in 1 2; do
+  for depth in 1 2; do
+    for height in 8 12 16 18 20; do
       openscad \
         ../gridfinity_riser.scad \
-        -D xsize=${xsize} \
-        -D ysize=${ysize} \
-        -D zsize=${zsize} \
-        -o tunnel_tower_${xsize}x${ysize}x${zsize}.stl
+        -D width=${width} \
+        -D depth=${depth} \
+        -D height=${height} \
+        -o tunnel_tower_${width}x${depth}x${height}.stl
     done
   done
 done

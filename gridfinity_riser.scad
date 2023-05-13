@@ -1,14 +1,21 @@
 include <vector76/gridfinity_modules.scad>
 
-xsize = 4;
-ysize = 3;
-zsize = 4;
+// Block height (7mm unit).
+height = 4;
+
+// Grid X cell count (42mm aka 6u relative to height).
+width = 4;
+
+// Grid Y cell count (42mm aka 6u relative to height).
+depth = 3;
+
+// Nominal tunnel size (7mm unit), will be clamped to available block space; 4u tunnels start to make sense in a 5u tall block.
 tunnel_size = 3;
 
 // If you don't need magnet attachments, 4u tunnels can be viable in even a 3u or 4u tall riser.
 magnets = true;
 
-tunnel_block(xsize, ysize, zsize, size=tunnel_size, magnet_diameter=magnets ? 6.5 : 0);
+tunnel_block(width, depth, height, size=tunnel_size, magnet_diameter=magnets ? 6.5 : 0);
 
 module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5) {
   height = num_z * gridfinity_zpitch;
