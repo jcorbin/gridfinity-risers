@@ -5,15 +5,17 @@ ysize = 3;
 zsize = 4;
 tunnel_size = 3;
 
-tunnel_block(xsize, ysize, zsize, size=tunnel_size);
+// If you don't need magnet attachments, 4u tunnels can be viable in even a 3u or 4u tall riser.
+magnets = true;
 
-module tunnel_block(num_x, num_y, num_z, size=3) {
+tunnel_block(xsize, ysize, zsize, size=tunnel_size, magnet_diameter=magnets ? 6.5 : 0);
+
+module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5) {
   height = num_z * gridfinity_zpitch;
   margin = 2.25;
 
   corner_radius = 3.75;
-  magnet_od = 6.5;
-  magnet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-magnet_od/2);
+  magnet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-magnet_diameter/2);
   magnet_thickness = 2.4;
   eps = 0.1;
 
@@ -24,8 +26,8 @@ module tunnel_block(num_x, num_y, num_z, size=3) {
   frame_corner_position = frame_outer_size/2 - corner_radius;
   total_height = frame_lift + frame_height;
 
-  magnet_margin = magnet_od > 0 ? (gridfinity_pitch/2 - magnet_position + magnet_od/4) : 0;
-  magnet_height = magnet_od > 0 ? magnet_thickness + 1 : 0;
+  magnet_margin = magnet_diameter > 0 ? (gridfinity_pitch/2 - magnet_position + magnet_diameter/4) : 0;
+  magnet_height = magnet_diameter > 0 ? magnet_thickness + 1 : 0;
 
   xy_tunnel_width = min(size, floor(gridfinity_pitch / gridfinity_zpitch));
   z_tunnel_width = min(size, floor((gridfinity_pitch - 2*magnet_margin) / gridfinity_zpitch));
@@ -58,11 +60,11 @@ module tunnel_block(num_x, num_y, num_z, size=3) {
       pad_oversize(margins=1);
 
     // top magnet holes
-    if (magnet_od > 0) {
+    if (magnet_diameter > 0) {
       gridcopy(num_x, num_y) {
         cornercopy(magnet_position) {
           translate([0, 0, height-magnet_thickness])
-          cylinder(d=magnet_od, h=magnet_thickness+eps, $fn=48);
+          cylinder(d=magnet_diameter, h=magnet_thickness+eps, $fn=48);
         }
       }
     }
