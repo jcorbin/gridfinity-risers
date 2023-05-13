@@ -19,7 +19,6 @@ tunnel_block(width, depth, height, size=tunnel_size, magnet_diameter=magnets ? 6
 
 module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5) {
   height = num_z * gridfinity_zpitch;
-  margin = 2.25;
 
   corner_radius = 3.75;
   magnet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-magnet_diameter/2);
@@ -40,15 +39,7 @@ module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5) {
   z_tunnel_width = min(size, floor((gridfinity_pitch - 2*magnet_margin) / gridfinity_zpitch));
   tunnel_height = min(size,
     // tunnel size bigger than 3u starts to slightly undercut magnet holes, needs more headroom
-    magnet_diameter > 0 && size > 3 ? num_z-2 : num_z-1
-  );
-
-  xy_tunnel_width_mm = xy_tunnel_width * gridfinity_zpitch;
-  z_tunnel_width_mm = z_tunnel_width * gridfinity_zpitch;
-  tunnel_height_mm = tunnel_height * gridfinity_zpitch;
-
-  every = ceil((tunnel_height_mm + margin) / gridfinity_zpitch) * gridfinity_zpitch;
-  lift = margin + every/2;
+    magnet_diameter > 0 && size > 3 ? num_z-2 : num_z-1);
 
   difference() {
 
@@ -79,26 +70,58 @@ module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5) {
       }
     }
 
-    for (layer = [0 : every : total_height - margin - tunnel_height_mm]) {
-      // X tunnels
-      gridcopy(1, num_y)
-      translate([-gridfinity_pitch/2-1, 0, layer + lift])
-      rotate([0, 90, 0])
-        tunnel(tunnel_height_mm, xy_tunnel_width_mm, gridfinity_pitch * num_x + 2);
-
-      // Y tunnels
-      gridcopy(num_x, 1)
-      translate([0, gridfinity_pitch * (num_y - 0.5)+1, layer + lift])
-      rotate([90, 0, 0])
-        tunnel(xy_tunnel_width_mm, tunnel_height_mm, gridfinity_pitch * num_y + 2);
-
-    }
-
-    // Z tunnels
-    gridcopy(num_x, num_y)
-    translate([0, 0, -1])
-      tunnel(z_tunnel_width_mm, z_tunnel_width_mm, gridfinity_zpitch * num_z + 2);
+    tunnels(
+      num_x, num_y, num_z,
+      x_width = xy_tunnel_width,
+      y_width = xy_tunnel_width,
+      z_width = z_tunnel_width,
+      height = tunnel_height,
+      margin = 2.25,
+      total_height=total_height);
   }
+}
+
+module tunnels(
+  num_x, num_y, num_z,
+  x_width=3, // 7mm unit ; bore width of X oriented tunnels
+  y_width=3, // 7mm unit ; bore width of Y oriented tunnels
+  z_width=3, // 7mm unit ; bore width of Z oriented tunnels
+  height=3, // 7mm unit ; bore height of X and Y oriented tunnels
+  margin=0, // mm ; Z lift for each layer of tunnels
+  total_width=0, // mm ; override num_x bound
+  total_depth=0, // mm ; override num_y bound
+  total_height=0 // mm ; override num_z bound
+) {
+  x_width_mm = x_width * gridfinity_zpitch;
+  y_width_mm = y_width * gridfinity_zpitch;
+  z_width_mm = z_width * gridfinity_zpitch;
+  height_mm = height * gridfinity_zpitch;
+
+  total_x = total_width == 0 ? num_x * gridfinity_pitch : total_width;
+  total_y = total_depth == 0 ? num_y * gridfinity_pitch : total_depth;
+  total_z = total_height == 0 ? num_z * gridfinity_zpitch : total_height;
+
+  every = ceil((height_mm + margin) / gridfinity_zpitch) * gridfinity_zpitch;
+  lift = margin + every/2;
+
+  for (layer = [0 : every : total_z - margin - height_mm]) {
+    // X tunnels
+    gridcopy(1, num_y)
+    translate([-gridfinity_pitch/2-1, 0, layer + lift])
+    rotate([0, 90, 0])
+      tunnel(height_mm, x_width_mm, total_x + 2);
+
+    // Y tunnels
+    gridcopy(num_x, 1)
+    translate([0, gridfinity_pitch * (num_y - 0.5)+1, layer + lift])
+    rotate([90, 0, 0])
+      tunnel(y_width_mm, height_mm, total_y + 2);
+  }
+
+  // Z tunnels
+  gridcopy(num_x, num_y)
+  translate([0, 0, -1])
+    tunnel(z_width_mm, z_width_mm, total_z + 2);
 }
 
 module tunnel(xsize, ysize, h) {
