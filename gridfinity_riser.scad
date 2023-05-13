@@ -31,7 +31,10 @@ module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5) {
 
   xy_tunnel_width = min(size, floor(gridfinity_pitch / gridfinity_zpitch));
   z_tunnel_width = min(size, floor((gridfinity_pitch - 2*magnet_margin) / gridfinity_zpitch));
-  tunnel_height = min(size, floor((height - margin - magnet_height) / gridfinity_zpitch));
+  tunnel_height = min(size,
+    // tunnel size bigger than 3u starts to slightly undercut magnet holes, needs more headroom
+    magnet_diameter > 0 && size > 3 ? num_z-2 : num_z-1
+  );
 
   xy_tunnel_width_mm = xy_tunnel_width * gridfinity_zpitch;
   z_tunnel_width_mm = z_tunnel_width * gridfinity_zpitch;
