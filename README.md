@@ -3,6 +3,8 @@
 These are some riser modules useful for creating "cable basements" or otherwise
 managing cable runs inside a gridfinity application.
 
+Published STL models are published on [thangs](https://than.gs/m/853821)
+
 Status:
 - [x] working tunnel block for routing cables underneath a raised floor
 - [x] tunnel towers can provide a sort of vertical conduit and/or support other
