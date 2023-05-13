@@ -25,9 +25,16 @@ module tunnel_block(num_x, num_y, num_z, size=default_tunnel_size) {
   frame_corner_position = frame_outer_size/2 - corner_radius;
   total_height = frame_lift + frame_height;
 
-  xy_tunnel_width_mm = size * gridfinity_zpitch;
-  z_tunnel_width_mm = size * gridfinity_zpitch;
-  tunnel_height_mm = size * gridfinity_zpitch;
+  magnet_margin = magnet_od > 0 ? (gridfinity_pitch/2 - magnet_position + magnet_od/4) : 0;
+  magnet_height = magnet_od > 0 ? magnet_thickness + 1 : 0;
+
+  xy_tunnel_width = min(size, floor(gridfinity_pitch / gridfinity_zpitch));
+  z_tunnel_width = min(size, floor((gridfinity_pitch - 2*magnet_margin) / gridfinity_zpitch));
+  tunnel_height = min(size, floor((height - margin - magnet_height) / gridfinity_zpitch));
+
+  xy_tunnel_width_mm = xy_tunnel_width * gridfinity_zpitch;
+  z_tunnel_width_mm = z_tunnel_width * gridfinity_zpitch;
+  tunnel_height_mm = tunnel_height * gridfinity_zpitch;
 
   every = ceil((tunnel_height_mm + margin) / gridfinity_zpitch) * gridfinity_zpitch;
   lift = margin + every/2;
