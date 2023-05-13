@@ -3,12 +3,11 @@ include <vector76/gridfinity_modules.scad>
 xsize = 4;
 ysize = 3;
 zsize = 4;
+tunnel_size = 3;
 
-default_tunnel_size = 3;
+tunnel_block(xsize, ysize, zsize, size=tunnel_size);
 
-tunnel_block(xsize, ysize, zsize);
-
-module tunnel_block(num_x, num_y, num_z, size=default_tunnel_size) {
+module tunnel_block(num_x, num_y, num_z, size=3) {
   height = num_z * gridfinity_zpitch;
   margin = 2.25;
 
