@@ -48,10 +48,12 @@ module tunnel_block(num_x, num_y, num_z, size=default_tunnel_size) {
       pad_oversize(margins=1);
 
     // top magnet holes
-    gridcopy(num_x, num_y) {
-      cornercopy(magnet_position) {
-        translate([0, 0, gridfinity_zpitch*num_z-magnet_thickness])
-        cylinder(d=magnet_od, h=magnet_thickness+eps, $fn=48);
+    if (magnet_od > 0) {
+      gridcopy(num_x, num_y) {
+        cornercopy(magnet_position) {
+          translate([0, 0, height-magnet_thickness])
+          cylinder(d=magnet_od, h=magnet_thickness+eps, $fn=48);
+        }
       }
     }
 
