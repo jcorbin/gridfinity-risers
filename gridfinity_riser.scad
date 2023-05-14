@@ -1,5 +1,8 @@
 include <vector76/gridfinity_modules.scad>
 
+include <BOSL2/std.scad>
+include <BOSL2/joiners.scad>
+
 // Block height (7mm unit).
 height = 4;
 
@@ -15,17 +18,60 @@ tunnel_size = 3;
 // If you don't need magnet attachments, 4u tunnels can be viable in even a 3u or 4u tall riser.
 magnets = true;
 
-tunnel_block(width, depth, height, size=tunnel_size, magnet_diameter=magnets ? 6.5 : 0);
+// Optionally generate a standalone baseplate; default is to generate a stackable module.
+base = false;
 
-module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5) {
+// Optionally enable rabbit clip sockets in baseplate mode.
+// These clips allow adjacent baseplates to be clipped together to form a larger strucure.
+//
+// NOTE: when generating clip sockets, a double rabbit clip object is generated alongside the baseplate;
+// suggested workflow is to split the generated STL apart into objects in your slicer,
+// then duplicate the clip as many times as desired.
+//
+// NOTE: suggested slicer settings for the clip (at least what worked for me):
+//       2 wall loops, no top/bottom layers, 0% infill.
+//       Basically the clips should generate as pure/only wall loops.
+base_clips = true;
+base_clip_length = 2 * 7;
+base_clip_width = 2 * 7;
+base_clip_depth = 3;
+base_clip_snap = 0.75;
+base_clip_thick = 1.6;
+base_clip_compress = 0.2;
+
+// Optionally carve pockets for rubber feet underneath the standalone baseplate.
+// These default are for 6x2mm rubber feet, which seemd a nice rhyme with the magnet metrics.
+// Unlink magnets however, these are only barely recessed to help them stay in place.
+//
+// NOTE: set base_feet_diameter to 0 to disable.
+base_feet_every = 2;
+base_feet_diameter = 6.5;
+base_feet_depth = 0.5;
+
+tunnel_block(width, depth, height, size=tunnel_size, magnet_diameter=magnets ? 6.5 : 0, base=base);
+
+if (base && base_clips) {
+  fwd(21+base_clip_length*1.5) right(21) up(2)
+  rabbit_clip(
+    type="double",
+    length=base_clip_length,
+    width=base_clip_width,
+    snap=base_clip_snap,
+    thickness=base_clip_thick,
+    depth=base_clip_depth,
+    compression=base_clip_compress
+  );
+}
+
+module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5, base=false) {
   height = num_z * gridfinity_zpitch;
 
   corner_radius = 3.75;
   eps = 0.1;
 
   // frame metrics adapted from frame_plain() but with corner meticis reconciled with grid_block()
-  frame_height = 5;
-  frame_lift = height - 0.6;
+  frame_height = (base ? num_z * gridfinity_zpitch : 0) + 5;
+  frame_lift = base ? 0 : height - 0.6;
   frame_outer_size = gridfinity_pitch - gridfinity_clearance;  // typically 41.5
   frame_corner_position = frame_outer_size/2 - corner_radius;
   total_height = frame_lift + frame_height;
@@ -33,6 +79,8 @@ module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5) {
   magnet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-magnet_diameter/2);
   magnet_thickness = 2.4;
   magnet_margin = magnet_diameter > 0 ? (gridfinity_pitch/2 - magnet_position + magnet_diameter/4) : 0;
+
+  feet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-base_feet_diameter/2);
 
   xy_tunnel_width = min(size, floor(gridfinity_pitch / gridfinity_zpitch));
   z_tunnel_width = min(size, floor((gridfinity_pitch - 2*magnet_margin) / gridfinity_zpitch));
@@ -43,8 +91,10 @@ module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5) {
   difference() {
 
     union() {
-      // primary block body
-      grid_block(num_x, num_y, num_z, screw_depth=0);
+      // use a grid block body if not generating a standalone baseplate
+      if (!base) {
+        grid_block(num_x, num_y, num_z, screw_depth=0);
+      }
 
       // top frame body
       translate([0, 0, frame_lift])
@@ -54,7 +104,7 @@ module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5) {
     }
 
     // top frame cell cutouts
-    translate([0, 0, frame_lift])
+    translate([0, 0, base ? num_z * gridfinity_zpitch : frame_lift])
       render()
       gridcopy(num_x, num_y)
       pad_oversize(margins=1);
@@ -69,6 +119,30 @@ module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5) {
       }
     }
 
+    if (base) {
+
+      // interconnect clip sockets
+      if (base_clips) {
+        copy_grid_perim(num_x, num_y)
+          up(2 + 3/2) rabbit_clip(
+            type="socket",
+            length=base_clip_length,
+            width=base_clip_width,
+            snap=base_clip_snap,
+            thickness=base_clip_thick,
+            depth=base_clip_depth,
+            compression=base_clip_compress,
+            orient=FRONT);
+      }
+
+      // feet pockets
+      if (base_feet_diameter > 0) {
+        copy_grid_feet(num_x, num_y, every=base_feet_every)
+          cylinder(d=base_feet_diameter, h=2*base_feet_depth+eps, $fn=48);
+      }
+
+    }
+
     tunnels(
       num_x, num_y, num_z,
       x_width = xy_tunnel_width,
@@ -78,6 +152,41 @@ module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5) {
       margin = 2.25,
       total_height=total_height);
   }
+}
+
+module copy_grid_feet(num_x, num_y, every = 3) {
+  every2 = is_list(every) ? every : [every, every];
+  every_x = num_x % every2[0] == 1 && every2[0] > 1 ? every2[0] - 1 : every2[0];
+  every_y = num_y % every2[1] == 1 && every2[1] > 1 ? every2[1] - 1 : every2[1];
+  for (xi = [0 : every_x : num_x+1])
+  for (yi = [0 : every_y : num_y+1])
+  {
+    translate([
+      gridfinity_pitch * (xi - 0.5) + nudge(xi, gridfinity_pitch/6, num_x),
+      gridfinity_pitch * (yi - 0.5) + nudge(yi, gridfinity_pitch/6, num_y),
+      0
+    ]) children();
+  }
+}
+
+function nudge(i, by, last) = i == 0 ? by : i == last ? -by : 0;
+
+module copy_grid_perim(num_x, num_y) {
+  for (i = [1:num_y-1])
+    translate([-0.5 * gridfinity_pitch, (i - 0.5) * gridfinity_pitch, 0])
+    rotate([0, 0, 90])
+      children();
+  for (i = [1:num_y-1])
+    translate([(num_x - 0.5) * gridfinity_pitch, (i - 0.5) * gridfinity_pitch, 0])
+    rotate([0, 0, -90])
+      children();
+  for (i = [1:num_x-1])
+    translate([(i - 0.5) * gridfinity_pitch, -0.5 * gridfinity_pitch, 0])
+    rotate([0, 0, 180])
+      children();
+  for (i = [1:num_x-1])
+    translate([(i - 0.5) * gridfinity_pitch, (num_y - 0.5) * gridfinity_pitch, 0])
+      children();
 }
 
 module tunnels(
