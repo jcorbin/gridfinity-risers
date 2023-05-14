@@ -21,6 +21,13 @@ hex_size = 1;
 // Can be useful for larger hex_size, but tends to create edge artifacts with small hex_size.
 partial_hexes = false;
 
+// How thick the walls should be.
+// Controls both the extrusion depth from the outer cup perimiter to the interior,
+// and the thickness of hexagonal cell walls.
+// The default 1.8mm thickness turns out decently rigid,
+// while dropping down to 0.95 can yield a much more flexible wall
+wall_thickness = 1.8;
+
 // Whether the cup should have magnet pockets.
 magnets = true;
 
@@ -34,9 +41,10 @@ lip_style = "normal";
 
 hex_cup(
   width, depth, height,
-  hex_size=hex_size,
-  partial_hexes=partial_hexes,
-  lip_style= lip_style,
+  hex_size =hex_size,
+  partial_hexes =partial_hexes,
+  lip_style = lip_style,
+  wall_thickness = wall_thickness,
   magnet_diameter = magnets ? 6.5 : 0,
   screw_depth = screws ? 6 : 0
 );
@@ -52,7 +60,7 @@ module hex_cup(
   hole_overhang_remedy=false,
 
   floor_thickness=1.2,
-  wall_thickness=0.95,
+  wall_thickness=1.8,
   efficient_floor=false,
   lip_style="normal",
   box_corner_attachments_only=false
