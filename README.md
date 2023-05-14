@@ -34,6 +34,23 @@ so the default 3u tunnel should repeat every 4u.
 
 ![Tunnel Tower 1x1x12](images/tunnel_tower_1x1x12.png)
 
+## Hexagonal Walled Cups
+
+Inspired by a question in the Gridfinity discord, this is a recreation of a
+gridfinity cup with most of the wall material cut out by a hexagon grid.
+This model was created similarly to the tunnerl riser above,
+using [vector76] gridfinity mmodules and [bosl2] to manage the hexagaon window cutouts.
+
+A potential use here would be a stackable bin, whose contents would still be
+visble thru the side when stacked:
+![Hex Cup 2x2x6](images/hex_cup_2x2x6.png)
+
+Or a non-stacking pen cup:
+![Hex Cup 1x1x12 (no lip)](images/hex_cup_1x1x12_nolip.png)
+
+A similar cup can be seen in a picture uploaded by [ashleyi100 on thangs][ashleyi100]
+which looks similar to this [non gridfinity box][hcomb_box] on printables.
+
 ## Raised Base
 
 The initial design was a "legged table" based on [vector76] `frame_plain()` with extra height.
@@ -44,4 +61,7 @@ This version didn't feel great in practice,
 as the legs would chatter/skip over the external surface,
 allowing cables to jump/dislocate too easily.
 
+[ashleyi100]: https://thangs.com/designer/ashleyi100
+[bosl2]: https://github.com/revarbat/BOSL2
+[hcomb_box]: https://www.printables.com/model/250845-honeycomb-pattern-box-with-label
 [vector76]: https://github.com/vector76/gridfinity_openscad
