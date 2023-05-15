@@ -41,8 +41,8 @@ lip_style = "normal";
 
 hex_cup(
   width, depth, height,
-  hex_size =hex_size,
-  partial_hexes =partial_hexes,
+  hex_size = hex_size,
+  partial_hexes = partial_hexes,
   lip_style = lip_style,
   wall_thickness = wall_thickness,
   magnet_diameter = magnets ? 6.5 : 0,
@@ -119,7 +119,7 @@ module hex_cup(
         $fn=32
       );
 
-      left(y_outer_size/2+1)
+      left(x_outer_size/2+1)
       xrot(90)
       yrot(90)
       zrot(90)
@@ -129,13 +129,13 @@ module hex_cup(
           inside=square(size=[z_inner_size + hex_extra, y_inner_size + hex_extra], center=true)
         )
           zrot(180/6)
-          cylinder(h=y_outer_size+2, d=(hex_pitch - hex_wall/2)/cos(180/6) + eps, $fn=6);
+          cylinder(h=x_outer_size+2, d=(hex_pitch - hex_wall/2)/cos(180/6) + eps, $fn=6);
     }
 
     // Y axis aligned hex cutouts
     up(z_inner_lift) intersection() {
       cuboid(
-        [y_inner_size, x_outer_size+2, z_inner_size],
+        [x_inner_size, y_outer_size+2, z_inner_size],
         rounding=corner_radius,
         edges="Y",
         $fn=32
@@ -161,7 +161,7 @@ module hex_cup(
 module center_vector76(num_x, num_y, num_z) {
   translate([
     (0.5 - num_x/2) * gridfinity_pitch,
-    (0.5 - num_x/2) * gridfinity_pitch,
+    (0.5 - num_y/2) * gridfinity_pitch,
     (-num_z/2) * gridfinity_zpitch
   ]) children();
 }
