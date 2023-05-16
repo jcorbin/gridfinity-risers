@@ -103,18 +103,20 @@ module tunnels(
   every = ceil((height_mm + margin) / gridfinity_zpitch) * gridfinity_zpitch;
   lift = margin + every/2;
 
-  for (layer = [0 : every : total_z - margin - height_mm]) {
-    // X tunnels
-    gridcopy(1, num_y)
-    translate([-gridfinity_pitch/2-1, 0, layer + lift])
-    rotate([0, 90, 0])
-      tunnel(height_mm, x_width_mm, total_x + 2);
+  if (height_mm > 0) {
+    for (layer = [0 : every : total_z - margin - height_mm]) {
+      // X tunnels
+      gridcopy(1, num_y)
+      translate([-gridfinity_pitch/2-1, 0, layer + lift])
+      rotate([0, 90, 0])
+        tunnel(height_mm, x_width_mm, total_x + 2);
 
-    // Y tunnels
-    gridcopy(num_x, 1)
-    translate([0, gridfinity_pitch * (num_y - 0.5)+1, layer + lift])
-    rotate([90, 0, 0])
-      tunnel(y_width_mm, height_mm, total_y + 2);
+      // Y tunnels
+      gridcopy(num_x, 1)
+      translate([0, gridfinity_pitch * (num_y - 0.5)+1, layer + lift])
+      rotate([90, 0, 0])
+        tunnel(y_width_mm, height_mm, total_y + 2);
+    }
   }
 
   // Z tunnels
