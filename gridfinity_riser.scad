@@ -4,13 +4,13 @@ include <BOSL2/std.scad>
 include <BOSL2/joiners.scad>
 
 // Block height (7mm unit).
-height = 4;
+height = 2;
 
 // Grid X cell count (42mm aka 6u relative to height).
-width = 4;
+width = 6;
 
 // Grid Y cell count (42mm aka 6u relative to height).
-depth = 3;
+depth = 4;
 
 // Nominal tunnel size (7mm unit), will be clamped to available block space; 4u tunnels start to make sense in a 5u tall block.
 tunnel_size = 3;
@@ -19,7 +19,7 @@ tunnel_size = 3;
 magnets = true;
 
 // Optionally generate a standalone baseplate; default is to generate a stackable module.
-base = false;
+base = true;
 
 // Optionally enable rabbit clip sockets in baseplate mode.
 // These clips allow adjacent baseplates to be clipped together to form a larger strucure.
@@ -44,7 +44,7 @@ base_clip_compress = 0.2;
 // Unlink magnets however, these are only barely recessed to help them stay in place.
 //
 // NOTE: set base_feet_diameter to 0 to disable.
-base_feet_every = 2;
+base_feet_every = [2, 1];
 base_feet_diameter = 6.5;
 base_feet_depth = 0.5;
 
