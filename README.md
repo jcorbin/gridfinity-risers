@@ -34,6 +34,17 @@ so the default 3u tunnel should repeat every 4u.
 
 ![Tunnel Tower 1x1x12](images/tunnel_tower_1x1x12.png)
 
+## Tunnel Baseplate
+
+This is a variant of the tunnel block with a flat bottom meant to be used as a baseplate:
+- features rabbit clips and sockets to allow multiple basepaltes to be locked together
+- features pockets for rubber feet, default setup for 6x2mm feet (0.5mm deep pockets)
+
+These are designed for a desktop grid module that you don't want to accidentally slide around.
+
+![Tunnel Baseplate (top view)](images/riser_base_3x3x4_top.png)
+![Tunnel Baseplate (bottom view)](images/riser_base_3x3x4_bot.png)
+
 ## Hexagonal Walled Cups
 
 Inspired by a question in the Gridfinity discord, this is a recreation of a
