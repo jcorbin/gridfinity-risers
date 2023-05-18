@@ -63,7 +63,7 @@ if (base && base_clips) {
   );
 }
 
-module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5, base=false) {
+module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5, base=false, center=false) {
   height = num_z * gridfinity_zpitch;
 
   corner_radius = 3.75;
@@ -88,6 +88,7 @@ module tunnel_block(num_x, num_y, num_z, size=3, magnet_diameter=6.5, base=false
     // tunnel size bigger than 3u starts to slightly undercut magnet holes, needs more headroom
     magnet_diameter > 0 && size > 3 ? num_z-2 : num_z-1);
 
+  translate( center ? [-(num_x-1)*gridfinity_pitch/2, -(num_y-1)*gridfinity_pitch/2, 0] : [0, 0, 0] )
   difference() {
 
     union() {
