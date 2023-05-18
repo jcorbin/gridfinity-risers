@@ -11,6 +11,7 @@ height=4
 
 for width in 1 2 3 4 5 6; do
   for depth in 1 2 3 4 5; do
+    [ $depth -gt $width ] && continue
     openscad \
       ../gridfinity_riser.scad \
       -D width=${width} \
@@ -23,6 +24,7 @@ done
 for width in 1 2; do
   for depth in 1 2; do
     for height in 8 12 16 18 20; do
+    [ $depth -gt $width ] && continue
       openscad \
         ../gridfinity_riser.scad \
         -D width=${width} \
@@ -32,3 +34,4 @@ for width in 1 2; do
     done
   done
 done
+
